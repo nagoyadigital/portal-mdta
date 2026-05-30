@@ -1,0 +1,171 @@
+@import "tailwindcss";
+
+@theme {
+  /* Colors - Material Design 3 Style */
+  --color-primary: #004d27;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #006837;
+  --color-on-primary-container: #8ee4a6;
+  --color-primary-fixed: #9ef6b6;
+  --color-primary-fixed-dim: #83d99c;
+  --color-on-primary-fixed: #00210e;
+  --color-on-primary-fixed-variant: #00522a;
+
+  --color-secondary: #735c00;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #fed65b;
+  --color-on-secondary-container: #745c00;
+  --color-secondary-fixed: #ffe088;
+  --color-secondary-fixed-dim: #e9c349;
+  --color-on-secondary-fixed: #241a00;
+  --color-on-secondary-fixed-variant: #574500;
+
+  --color-tertiary: #004e10;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #156820;
+  --color-on-tertiary-container: #92e58c;
+  --color-tertiary-fixed: #a3f69c;
+  --color-tertiary-fixed-dim: #88d982;
+  --color-on-tertiary-fixed: #002204;
+  --color-on-tertiary-fixed-variant: #005312;
+
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #93000a;
+
+  --color-surface: #f8f9fa;
+  --color-on-surface: #191c1d;
+  --color-surface-variant: #e1e3e4;
+  --color-on-surface-variant: #3f4940;
+  --color-surface-dim: #d9dadb;
+  --color-surface-bright: #f8f9fa;
+  --color-surface-container: #edeeef;
+  --color-surface-container-low: #f3f4f5;
+  --color-surface-container-high: #e7e8e9;
+  --color-surface-container-highest: #e1e3e4;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-tint: #0b6d3b;
+
+  --color-background: #f8f9fa;
+  --color-on-background: #191c1d;
+
+  --color-outline: #6f7a70;
+  --color-outline-variant: #bec9be;
+
+  --color-inverse-surface: #2e3132;
+  --color-inverse-on-surface: #f0f1f2;
+  --color-inverse-primary: #83d99c;
+
+  /* Font Families */
+  --font-headline: "Lexend", sans-serif;
+  --font-body: "Inter", sans-serif;
+
+  /* Font Sizes */
+  --text-display-lg: 32px;
+  --text-headline-lg: 28px;
+  --text-headline-md: 24px;
+  --text-headline-sm: 20px;
+  --text-body-lg: 16px;
+  --text-body-md: 14px;
+  --text-label-lg: 14px;
+  --text-label-sm: 12px;
+
+  /* Spacing */
+  --spacing-unit: 8px;
+  --spacing-gutter: 16px;
+  --spacing-margin-mobile: 16px;
+  --spacing-margin-desktop: 32px;
+
+  /* Border Radius */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  --radius-full: 9999px;
+}
+
+/* Base Styles */
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-background);
+  color: var(--color-on-surface);
+  -webkit-tap-highlight-color: transparent;
+  min-height: 100dvh;
+}
+
+/* Material Symbols */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.fill-icon {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* Scrollbar Hide */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Bento Grid */
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 768px) {
+  .bento-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Card Shadows */
+.card-shadow {
+  box-shadow: 0 4px 20px -5px rgba(0, 77, 39, 0.06);
+}
+
+/* Scanner Animation */
+@keyframes scan {
+  0%, 100% { top: 5%; }
+  50% { top: 95%; }
+}
+
+.scan-line {
+  animation: scan 3s ease-in-out infinite;
+}
+
+/* Attendance Radio Styles */
+.attendance-radio:checked + label {
+  transform: scale(1.05);
+}
+
+.hadir-active:checked + label {
+  background-color: #004d27;
+  color: white;
+  border-color: #004d27;
+}
+
+.sakit-active:checked + label {
+  background-color: #735c00;
+  color: white;
+  border-color: #735c00;
+}
+
+.izin-active:checked + label {
+  background-color: #156820;
+  color: white;
+  border-color: #156820;
+}
+
+.alpha-active:checked + label {
+  background-color: #ba1a1a;
+  color: white;
+  border-color: #ba1a1a;
+}
