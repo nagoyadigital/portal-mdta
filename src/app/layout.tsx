@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Lexend, Inter } from "next/font/google";
+import SessionProvider from "@/components/providers/SessionProvider";
 import "./globals.css";
 
 const lexend = Lexend({
@@ -18,7 +19,12 @@ export const metadata: Metadata = {
   title: "Portal MDTA Hidayatul Mubtadi'in",
   description:
     "Platform digital terintegrasi untuk akademik, administrasi, keuangan, dan komunikasi MDTA Hidayatul Mubtadi'in",
-  viewport: "width=device-width, initial-scale=1.0, viewport-fit=cover",
+};
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover" as const,
 };
 
 export default function RootLayout({
@@ -35,7 +41,7 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased selection:bg-primary-fixed selection:text-on-primary-fixed">
-        {children}
+        <SessionProvider>{children}</SessionProvider>
       </body>
     </html>
   );

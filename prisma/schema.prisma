@@ -1,0 +1,220 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==================== AUTH & USERS ====================
+
+model User {
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  password      String
+  role          String    @default("guru") // super_admin, kepala_madrasah, admin, guru, bendahara, wali
+  phone         String?
+  address       String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  teacher       Teacher?
+  parent        Parent?
+}
+
+// ==================== AKADEMIK ====================
+
+model Teacher {
+  id        String   @id @default(cuid())
+  nip       String?  @unique
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  // Relations
+  subjects    SubjectTeacher[]
+  schedules   Schedule[]
+  attendances TeacherAttendance[]
+}
+
+model Student {
+  id          String   @id @default(cuid())
+  nis         String   @unique
+  name        String
+  gender      String   // L or P
+  birthDate   DateTime?
+  birthPlace  String?
+  address     String?
+  photo       String?
+  classId     String?
+  class       Class?   @relation(fields: [classId], references: [id])
+  parentId    String?
+  parent      Parent?  @relation(fields: [parentId], references: [id])
+  status      String   @default("aktif") // aktif, lulus, keluar
+  enrollDate  DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  attendances StudentAttendance[]
+  hafalans    Hafalan[]
+  grades      Grade[]
+  payments    Payment[]
+}
+
+model Parent {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  // Relations
+  students  Student[]
+}
+
+model Class {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  level     Int      // 1, 2, 3, 4, 5, 6
+  year      String   // Tahun ajaran: "2024/2025"
+  createdAt DateTime @default(now())
+
+  // Relations
+  students  Student[]
+  schedules Schedule[]
+}
+
+model Subject {
+  id        String   @id @default(cuid())
+  name      String
+  code      String   @unique
+  createdAt DateTime @default(now())
+
+  // Relations
+  teachers  SubjectTeacher[]
+  schedules Schedule[]
+  grades    Grade[]
+}
+
+model SubjectTeacher {
+  id        String  @id @default(cuid())
+  subjectId String
+  teacherId String
+  subject   Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  teacher   Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+
+  @@unique([subjectId, teacherId])
+}
+
+model Schedule {
+  id        String  @id @default(cuid())
+  day       Int     // 1=Senin, 2=Selasa, ..., 6=Sabtu
+  startTime String  // "14:00"
+  endTime   String  // "14:45"
+  subjectId String
+  teacherId String
+  classId   String
+  subject   Subject @relation(fields: [subjectId], references: [id])
+  teacher   Teacher @relation(fields: [teacherId], references: [id])
+  class     Class   @relation(fields: [classId], references: [id])
+
+  @@unique([day, startTime, classId])
+}
+
+// ==================== ABSENSI ====================
+
+model StudentAttendance {
+  id        String   @id @default(cuid())
+  studentId String
+  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  date      DateTime
+  status    String   // hadir, sakit, izin, alpha
+  note      String?
+  createdAt DateTime @default(now())
+
+  @@unique([studentId, date])
+}
+
+model TeacherAttendance {
+  id        String   @id @default(cuid())
+  teacherId String
+  teacher   Teacher  @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  date      DateTime
+  status    String   // hadir, sakit, izin, alpha
+  createdAt DateTime @default(now())
+
+  @@unique([teacherId, date])
+}
+
+// ==================== HAFALAN ====================
+
+model Hafalan {
+  id        String   @id @default(cuid())
+  studentId String
+  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  type      String   // quran, doa, hadith
+  title     String   // Nama surah / doa / hadits
+  juz       Int?     // Juz (for quran)
+  status    String   @default("proses") // proses, selesai
+  grade     String?  // A, B, C, D
+  date      DateTime @default(now())
+  note      String?
+  createdAt DateTime @default(now())
+}
+
+// ==================== PENILAIAN ====================
+
+model Grade {
+  id        String   @id @default(cuid())
+  studentId String
+  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  subjectId String
+  subject   Subject  @relation(fields: [subjectId], references: [id])
+  type      String   // harian, uts, uas
+  semester  Int      // 1 or 2
+  year      String   // "2024/2025"
+  score     Float
+  date      DateTime @default(now())
+  createdAt DateTime @default(now())
+}
+
+// ==================== KEUANGAN ====================
+
+model Payment {
+  id        String   @id @default(cuid())
+  studentId String
+  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  type      String   // spp, infaq, daftar_ulang, lainnya
+  amount    Float
+  month     Int?     // 1-12 (for SPP)
+  year      Int
+  status    String   @default("pending") // pending, lunas
+  paidAt    DateTime?
+  note      String?
+  createdAt DateTime @default(now())
+}
+
+model CashBook {
+  id          String   @id @default(cuid())
+  type        String   // masuk, keluar
+  category    String   // spp, infaq, operasional, gaji, dll
+  amount      Float
+  description String
+  date        DateTime @default(now())
+  createdAt   DateTime @default(now())
+}
+
+// ==================== PENGUMUMAN ====================
+
+model Announcement {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  category  String   // penting, akademik, acara, keuangan
+  target    String   @default("semua") // semua, guru, wali, kelas_1, dll
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
